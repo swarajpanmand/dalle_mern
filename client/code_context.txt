@@ -1,0 +1,286 @@
+// File: eslint.config.js
+import js from '@eslint/js'
+import globals from 'globals'
+import react from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+
+export default [
+  { ignores: ['dist'] },
+  {
+    files: ['**/*.{js,jsx}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
+    },
+    settings: { react: { version: '18.3' } },
+    plugins: {
+      react,
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...react.configs.recommended.rules,
+      ...react.configs['jsx-runtime'].rules,
+      ...reactHooks.configs.recommended.rules,
+      'react/jsx-no-target-blank': 'off',
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+    },
+  },
+]
+
+// File: index.html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="viewport" href="https://rsms.me/inter/inter.css"> 
+    <title>Dalle2.0</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html> 
+
+// File: postcss.config.js
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+// File: src/App.css
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+// File: src/App.jsx
+import React from "react";
+import { BrowserRouter, Route, Link, Router } from "react-router-dom";
+import { logo } from "./assets";
+import { Home, CreatePost } from "./pages";
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <header className="w-full flex justify-between items-center bg-white sm:px-8 py-4 border-b-[#e6ebf4]">
+        <Link to="/">
+          <img src={logo} alt="logo" className="w-28 object-contain" />
+        </Link>
+        <Link
+          to="/create-post"
+          className="font-inter font-medium bg-[#6469ff] text-white px-4 py-2 rounded-md"
+        >
+          Create
+         </Link>
+      </header>
+      <main className="sm:p-8 px-4 py-8 w-full bg-[#f9fafe] min-h-[cal(100vh - 73px ">
+        <Route>
+          <Route path="/" element={<Home />} />
+          <Route path="/create-post" element={<CreatePost />} />
+        </Route>
+
+      </main>
+    </BrowserRouter>
+  );
+};
+
+export default App;
+
+// File: src/assets/index.js
+import download from './download.png';
+import logo from './logo.svg';
+import preview from './preview.png';
+
+export {
+  download,
+  logo,
+  preview,
+};
+
+// File: src/constants/index.js
+export const surpriseMePrompts = [
+    'an armchair in the shape of an avocado',
+    'a surrealist dream-like oil painting by Salvador Dalí of a cat playing checkers',
+    'teddy bears shopping for groceries in Japan, ukiyo-e',
+    'an oil painting by Matisse of a humanoid robot playing chess',
+    'panda mad scientist mixing sparkling chemicals, digital art',
+    "a macro 35mm photograph of two mice in Hawaii, they're each wearing tiny swimsuits and are carrying tiny surf boards, digital art",
+    '3D render of a cute tropical fish in an aquarium on a dark blue background, digital art',
+    'an astronaut lounging in a tropical resort in space, vaporwave',
+    'an oil painting portrait of a capybara wearing medieval royal robes and an ornate crown on a dark background',
+    'a stained glass window depicting a hamburger and french fries',
+    'a pencil and watercolor drawing of a bright city in the future with flying cars',
+    'a sunlit indoor lounge area with a pool with clear water and another pool with translucent pastel pink water, next to a big window, digital art',
+    'a fortune-telling shiba inu reading your fate in a giant hamburger, digital art',
+    '"a sea otter with a pearl earring" by Johannes Vermeer',
+    'an oil pastel drawing of an annoyed cat in a spaceship',
+    'a painting of a fox in the style of Starry Night',
+    'a bowl of soup that looks like a monster, knitted out of wool',
+    'A plush toy robot sitting against a yellow wall',
+    'A synthwave style sunset above the reflecting water of the sea, digital art',
+    'Two futuristic towers with a skybridge covered in lush foliage, digital art',
+    'A 3D render of a rainbow colored hot air balloon flying above a reflective lake',
+    'A comic book cover of a superhero wearing headphones',
+    'A centered explosion of colorful powder on a black background',
+    'A photo of a Samoyed dog with its tongue out hugging a white Siamese cat',
+    'A photo of a white fur monster standing in a purple room',
+    "A photo of Michelangelo's sculpture of David wearing headphones djing",
+    'A Samurai riding a Horse on Mars, lomography.',
+    'A modern, sleek Cadillac drives along the Gardiner expressway with downtown Toronto in the background, with a lens flare, 50mm photography',
+    'A realistic photograph of a young woman with blue eyes and blonde hair',
+    'A man standing in front of a stargate to another dimension',
+    'Spongebob Squarepants in the Blair Witch Project',
+    'A velociraptor working at a hotdog stand, lomography',
+    'A man walking through the bustling streets of Kowloon at night, lit by many bright neon shop signs, 50mm lens',
+    'A BBQ that is alive, in the style of a Pixar animated movie',
+    'A futuristic cyborg dance club, neon lights',
+    'The long-lost Star Wars 1990 Japanese Anime',
+    'A hamburger in the shape of a Rubik’s cube, professional food photography',
+    'A Synthwave Hedgehog, Blade Runner Cyberpunk',
+    'An astronaut encountering an alien life form on a distant planet, photography',
+    'A Dinosaur exploring Cape Town, photography',
+    'A Man falling in Love with his Computer, digital art',
+    'A photograph of a cyborg exploring Tokyo at night, lomography',
+    'Dracula walking down the street of New York City in the 1920s, black and white photography',
+    'Synthwave aeroplane',
+    'A man wanders through the rainy streets of Tokyo, with bright neon signs, 50mm',
+    'A Space Shuttle flying above Cape Town, digital art',
+  ];
+// File: src/index.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+@media screen and (min-width: 480px) {
+    .card:nth-child(7n + 1) {
+        grid-column: auto/span 2;
+        grid-row: auto/span 2;
+    }
+}
+
+.prompt::-webkit-scrollbar {
+    width: 5px;
+}
+ 
+.prompt::-webkit-scrollbar-thumb {
+  background-color: #666e75;
+  border-radius: 5px;
+}
+// File: src/main.jsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+// File: src/pages/CreatePost.jsx
+import React from 'react'
+
+const CreatePost = () => {
+  return (
+    <div>CreatePost</div>
+  )
+}
+
+export default CreatePost
+// File: src/pages/Home.jsx
+import React from 'react'
+
+const Home = () => {
+  return (
+    <div>Home</div>
+  )
+}
+
+export default Home
+// File: src/pages/index.js
+import Home from './Home';
+import CreatePost from './CreatePost';
+ 
+export {
+    Home,
+    CreatePost 
+}
+
+// File: tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+
+// File: vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+
