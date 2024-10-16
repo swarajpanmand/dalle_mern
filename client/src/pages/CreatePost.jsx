@@ -44,12 +44,11 @@ const CreatePost = () => {
         setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
       } catch (err) {
         console.error("Error generating image:", err);
-        alert(`Error generating image. Using a placeholder instead.`);
-        // Use a placeholder image
+        alert(`Error generating image. Using a text description instead.`);
+        // Use a text description instead of a placeholder image
         setForm({
           ...form,
-          photo:
-            "https://via.placeholder.com/512x512.png?text=AI+Image+Placeholder",
+          photo: `Text description: ${form.prompt}`,
         });
       } finally {
         setGeneratingImg(false);
