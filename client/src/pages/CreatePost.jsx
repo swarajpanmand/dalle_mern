@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { preview } from "../assets";
 import { getRandomPrompt } from "../utils";
 import { FormField, Loader } from "../components";
 
 const CreatePost = () => {
-  const navigate = useNavigate(); // useNavigate is a hook from react-router-dom that allows us to navigate to different routes
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     prompt: "",
@@ -16,21 +15,98 @@ const CreatePost = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const generateImage = () => {};
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit = () => {};
+  const handleSurpriseMe = () => {
+    const randomPrompt = getRandomPrompt(form.prompt);
+    setForm({ ...form, prompt: randomPrompt });
+  };
 
-  const handleChange = (e) => {};
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingImg(true);
+        const response = await fetch("http://localhost:8080/api/v1/dalle", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: form.prompt }),
+        });
 
-  const handleSurpriseMe = () => {};
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (err) {
+        console.error("Error generating image:", err);
+        alert(`Error generating image. Using a placeholder instead.`);
+        // Use a placeholder image
+        setForm({
+          ...form,
+          photo:
+            "https://via.placeholder.com/512x512.png?text=AI+Image+Placeholder",
+        });
+      } finally {
+        setGeneratingImg(false);
+      }
+    } else {
+      alert("Please provide a proper prompt");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (form.prompt && form.photo) {
+      setLoading(true);
+      try {
+        const response = await fetch("http://localhost:8080/api/v1/post", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            `HTTP error! status: ${response.status}, message: ${
+              errorData.message || "Unknown error"
+            }`
+          );
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          navigate("/");
+        } else {
+          throw new Error(result.message || "Failed to create post");
+        }
+      } catch (err) {
+        console.error("Error submitting post:", err);
+        alert(`Error submitting post: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert("Please provide a prompt and generate an image");
+    }
+  };
 
   return (
     <section className="max-w-7xl mx-auto">
       <div>
         <h1 className="font-extrabold text-[#222328] text-[32px]">Create</h1>
         <p className="mt-2 text-[#666e75] text-[16px] max-w-[500px]">
-          Create imaginative and visually stunning images through by DALLE-E AI
-          and share it with the community
+          Create imaginative and visually stunning images through DALL-E AI and
+          share them with the community
         </p>
       </div>
 
@@ -55,7 +131,7 @@ const CreatePost = () => {
             handleSurpriseMe={handleSurpriseMe}
           />
         </div>
-        <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 w-64 p-3 h-64 flex justify-center items-center">
+        <div className="relative mt-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 w-64 p-3 h-64 flex justify-center items-center">
           {form.photo ? (
             <img
               src={form.photo}
@@ -80,17 +156,20 @@ const CreatePost = () => {
           <button
             type="button"
             onClick={generateImage}
-            className="text-white bg-green-700 font-medium rounded-md  text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            className="text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           >
             {generatingImg ? "Generating Image" : "Generate Image"}
           </button>
         </div>
         <div className="mt-10">
-          <p className="mt-2 text-[#666e75] text-[14px] ">
+          <p className="mt-2 text-[#666e75] text-[14px]">
             Once you have created the image you want, you can share it with
             others in the community
           </p>
-          <button type="submit" className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center">
+          <button
+            type="submit"
+            className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          >
             {loading ? "Sharing..." : "Share with the community"}
           </button>
         </div>
